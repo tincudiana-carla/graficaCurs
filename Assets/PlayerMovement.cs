@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 5f;
     public Transform groundCheck;
     public LayerMask ground;
+    public AudioSource jumpSound;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -20,7 +21,20 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector3(horizontalInput * movementSpeed, rb.velocity.y, verticalInput * movementSpeed);
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+            Jump();
+        }
+    }
+    void Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+        jumpSound.Play();
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("EnemyHead"))
+        {
+            Destroy(collision.transform.parent.gameObject);
+            Jump();
         }
     }
     bool IsGrounded()
